@@ -1,0 +1,23 @@
+# Файлы с конфигурацией БД (пароли, подключения)
+db.php
+testdb.php
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.cache
+
+# Системные папки
+node_modules/
+vendor/
+.env
+
+# Файлы IDE/редакторов
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ОС-шный мусор
+.DS_Store
+Thumbs.db
