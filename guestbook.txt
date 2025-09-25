@@ -7,3 +7,27 @@ Vse ponravilos
 2025-09-25 10:15:27 | Egor | rating=5 | rec=0 | 
 Tovar norm
 ---
+2025-09-25 11:07:29 | Egor | rating=4 | rec=0 | 5
+Бебебе
+---
+2025-09-25 11:07:39 | Egor | rating=4 | rec=0 | 5
+Бебебе
+---
+2025-09-25 11:18:32 | Egor | rating=5 | rec=0 | 
+123
+---
+2025-09-25 11:20:32 | Egor | rating=5 | rec=0 | product_ref=
+123
+---
+2025-09-25 11:20:52 | Egor | rating=5 | rec=0 | product_ref=
+123
+---
+2025-09-25 11:20:55 | Egor | rating=5 | rec=0 | product_ref=
+123
+---
+2025-09-25 11:21:59 | Egor | rating=5 | rec=0 | product_ref=26
+Понравилось
+---
+2025-09-25 11:24:36 | Иван | rating=1 | rec=0 | 
+Не нравится
+---
