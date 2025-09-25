@@ -1,58 +1,51 @@
 <?php
-session_start();
-include "db.php";
+require_once "header.php";
+require_once "db.php";
+
+$username = "";
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
+
+    if (empty($username) || empty($password)) {
+        $error = "Введите логин и пароль.";
+    } else {
+        $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE username=? OR email=? LIMIT 1");
+        mysqli_stmt_bind_param($stmt, "ss", $username, $username);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        $user = mysqli_fetch_assoc($res);
+
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
+            header("Location: index.php");
+            exit;
+        } else {
+            $error = "Неверный логин или пароль.";
+        }
+        mysqli_stmt_close($stmt);
+    }
+}
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Вход — Салон штор «Стерх»</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="alt">
-<div class="wrapper">
-    <?php include "header.php"; ?>
 
-    <div class="container">
-        <aside class="sidebar">
-            <ul>
-                <li><a href="register.php">Регистрация</a></li>
-                <li><a href="catalog.php">Каталог</a></li>
-            </ul>
-        </aside>
-
-        <main class="content">
-            <h2>Вход</h2>
-            <form class="form-grid" method="post" action="">
-                <input type="text" name="login" placeholder="Логин или email">
-                <input type="password" name="password" placeholder="Пароль">
-                <button type="submit">Войти</button>
-            </form>
-
-            <?php
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $l = trim($_POST['login']);
-                $p = $_POST['password'];
-
-                $res = mysqli_query($conn, "SELECT * FROM users WHERE username='$l' OR email='$l'");
-                if ($row = mysqli_fetch_assoc($res)) {
-                    if (password_verify($p, $row['password'])) {
-                        $_SESSION['user_id'] = $row['id'];
-                        $_SESSION['username'] = $row['username'];
-                        $_SESSION['role'] = $row['role']; // ✅ добавили роль
-                        header("Location: profile.php");
-                        exit;
-                    } else {
-                        echo '<p style="color:#a00;">Неверный пароль.</p>';
-                    }
-                } else {
-                    echo '<p style="color:#a00;">Пользователь не найден.</p>';
-                }
-            }
-            ?>
-        </main>
+<main class="content">
+    <div class="auth-form">
+        <h2>Вход</h2>
+        <?php if ($error): ?>
+            <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
+        <form method="post">
+            <input type="text" name="username" placeholder="Логин или email" value="<?= htmlspecialchars($username) ?>" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <input type="submit" value="Войти">
+        </form>
     </div>
-    <?php include "footer.php"; ?>
-</div>
-</body>
-</html>
+</main>
+
+<div style="height:343px;"></div>
+
+<?php require_once "footer.php"; ?>

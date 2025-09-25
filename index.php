@@ -30,17 +30,17 @@ session_start();
             <div class="slider banner-slider">
                 <div class="slides">
                     <div class="slide">
-                        <a href="https://shop.ctepx.ru/" target="_blank">
+                         <a href="catalog.php">
                             <img src="images/banner1.jpg" alt="Баннер 1">
                         </a>
                     </div>
                     <div class="slide">
-                        <a href="https://shop.ctepx.ru/" target="_blank">
+                         <a href="catalog.php">
                             <img src="images/banner2.jpg" alt="Баннер 2">
                         </a>
                     </div>
                     <div class="slide">
-                        <a href="https://shop.ctepx.ru/" target="_blank">
+                         <a href="catalog.php">
                             <img src="images/banner3.jpg" alt="Баннер 3">
                         </a>
                     </div>
@@ -55,9 +55,12 @@ session_start();
         </div>
 
         <aside class="image">
-            <a href="https://shop.ctepx.ru/" target="_blank">
+            <a href="https://www.cian.ru/" target="_blank">
                 <img src="images/banner.jpg" alt="Баннер" style="max-width:100%;">
             </a>
+            <a href="https://www.tbank.ru/" target="_blank">
+        <img src="images/banner_1.jpg" alt="Баннер 2" style="margin-top:15px;">
+    </a>
         </aside>
     </div>
 </main>

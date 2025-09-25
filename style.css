@@ -10,7 +10,11 @@ html, body {
     color: #333;
 }
 
-.wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+.wrapper {
+    min-height: 100vh;       /* вся высота окна */
+    display: flex;
+    flex-direction: column;
+}
 main { flex: 1; }
 
 /* === ВЕРХНЯЯ ЛИНИЯ === */
@@ -129,7 +133,7 @@ button:hover, input[type="submit"]:hover { background: #4b0082; }
 .pagination a:hover { background: purple; color: #fff; }
 
 /* === БАННЕР СПРАВА === */
-aside.image { width: 160px; flex-shrink: 0; }
+aside.image { width: 300px; flex-shrink: 0; }
 aside.image img { width: 100%; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: 0.3s; }
 aside.image img:hover { transform: scale(1.05); }
 
@@ -177,4 +181,35 @@ footer a { color:#fff; text-decoration: underline; }
     height: 100%;
     object-fit: cover;   /* картинка вписывается */
     border-radius: 12px;
+}
+.catalog-category {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 30px 0 15px;
+    color: purple;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+/* === ФОРМЫ АВТОРИЗАЦИИ / РЕГИСТРАЦИИ === */
+.auth-form {
+    max-width: 400px;      /* ограничиваем ширину */
+    margin: 30px auto;     /* центрируем */
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    width: 100%;           /* поле занимает всю ширину блока */
+}
+.auth-form button,
+.auth-form input[type="submit"] {
+    width: 100%;
+    border-radius: 20px;
 }

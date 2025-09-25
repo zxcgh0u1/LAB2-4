@@ -63,10 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </main>
 
         <aside class="image">
-    <a href="https://shop.ctepx.ru/" target="_blank">
-        <img src="images/banner.jpg" alt="Баннер" style="max-width:100%;">
+            <a href="https://www.cian.ru/" target="_blank">
+                <img src="images/banner.jpg" alt="Баннер" style="max-width:100%;">
+            </a>
+            <a href="https://www.tbank.ru/" target="_blank">
+        <img src="images/banner_1.jpg" alt="Баннер 2" style="margin-top:15px;">
     </a>
-</aside>
+        </aside>
 
 
     </div>

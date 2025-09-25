@@ -1,0 +1,9 @@
+2025-09-25 09:56:10 | Ivan | rating=4 | rec=0 | Шторы классические
+DA
+---
+2025-09-25 10:00:09 | Egor | rating=4 | rec=0 | 
+Vse ponravilos
+---
+2025-09-25 10:15:27 | Egor | rating=5 | rec=0 | 
+Tovar norm
+---

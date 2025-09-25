@@ -1,65 +1,60 @@
 <?php
-session_start();
-$conn = mysqli_connect('localhost', 'root', '', 'site');
-mysqli_set_charset($conn, "utf8mb4");
+require_once "header.php";
+require_once "db.php";
+
+$username = $fullname = $email = $phone = $password = $confirm_password = "";
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = trim($_POST['username']);
+    $fullname = trim($_POST['fullname']);
+    $email = trim($_POST['email']);
+    $phone = trim($_POST['phone']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    if (empty($username) || empty($fullname) || empty($email) || empty($phone) || empty($password) || empty($confirm_password)) {
+        $error = "Все поля обязательны для заполнения.";
+    } elseif ($password !== $confirm_password) {
+        $error = "Пароли не совпадают.";
+    } else {
+        $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE username=? OR email=?");
+        mysqli_stmt_bind_param($stmt, "ss", $username, $email);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        if (mysqli_num_rows($res) > 0) {
+            $error = "Пользователь с таким логином или email уже существует.";
+        } else {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = mysqli_prepare($conn, "INSERT INTO users (username, fullname, email, phone, password, role) VALUES (?,?,?,?,?,'user')");
+            mysqli_stmt_bind_param($stmt, "sssss", $username, $fullname, $email, $phone, $hash);
+            mysqli_stmt_execute($stmt);
+            header("Location: login.php");
+            exit;
+        }
+        mysqli_stmt_close($stmt);
+    }
+}
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Регистрация — Салон штор «Стерх»</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="alt">
-<div class="wrapper">
-    <?php include "header.php"; ?>
-    <div class="container">
-        <aside class="sidebar">
-            <ul>
-                <li><a href="login.php">Вход</a></li>
-                <li><a href="catalog.php">Каталог</a></li>
-            </ul>
-        </aside>
 
-        <main class="content">
-            <h2>Регистрация</h2>
-            <form class="form-grid" method="post" action="">
-                <input type="text" name="username" placeholder="Имя пользователя">
-                <input type="email" name="email" placeholder="Email">
-                <input type="password" name="password" placeholder="Пароль">
-                <input type="password" name="password2" placeholder="Повторите пароль">
-                <button type="submit">Зарегистрироваться</button>
-            </form>
-
-            <?php
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $u = trim($_POST['username']);
-                $e = trim($_POST['email']);
-                $p1 = $_POST['password'];
-                $p2 = $_POST['password2'];
-
-                $errors = [];
-                if ($u === '' || $e === '' || $p1 === '' || $p2 === '') $errors[] = 'Заполните все поля.';
-                if ($p1 !== $p2) $errors[] = 'Пароли не совпадают.';
-
-                // Проверка уникальности
-                $check = mysqli_query($conn, "SELECT id FROM users WHERE username='$u' OR email='$e'");
-                if (mysqli_num_rows($check) > 0) $errors[] = 'Такой пользователь уже есть.';
-
-                if ($errors) {
-                    echo '<ul style="color:#a00;">';
-                    foreach ($errors as $er) echo '<li>'.htmlspecialchars($er).'</li>';
-                    echo '</ul>';
-                } else {
-                    $hash = password_hash($p1, PASSWORD_DEFAULT);
-                    mysqli_query($conn, "INSERT INTO users (username, email, password) VALUES ('$u','$e','$hash')");
-                    echo '<p style="color:green;">Регистрация прошла успешно. Теперь <a href="login.php">войдите</a>.</p>';
-                }
-            }
-            ?>
-        </main>
+<main class="content">
+    <div class="auth-form">
+        <h2>Регистрация</h2>
+        <?php if ($error): ?>
+            <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
+        <form method="post">
+            <input type="text" name="username" placeholder="Имя пользователя (логин)" value="<?= htmlspecialchars($username) ?>" required>
+            <input type="text" name="fullname" placeholder="ФИО" value="<?= htmlspecialchars($fullname) ?>" required>
+            <input type="email" name="email" placeholder="Email" value="<?= htmlspecialchars($email) ?>" required>
+            <input type="text" name="phone" placeholder="Телефон" value="<?= htmlspecialchars($phone) ?>" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <input type="password" name="confirm_password" placeholder="Повторите пароль" required>
+            <input type="submit" value="Зарегистрироваться">
+        </form>
     </div>
-    <?php include "footer.php"; ?>
-</div>
-</body>
-</html>
+</main>
+
+<div style="height:171px;"></div>
+
+<?php require_once "footer.php"; ?>

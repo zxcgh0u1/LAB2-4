@@ -2,10 +2,10 @@
 session_start();
 require_once "db.php";
 
+// сколько товаров на страницу
 $perPage = 8;
-$page = max(1, (int)($_GET['page'] ?? 1));
-$offset = ($page - 1) * $perPage;
 
+// сортировка
 $sort = $_GET['sort'] ?? '';
 $allowed = [
     'price_asc'  => 'price ASC',
@@ -15,19 +15,12 @@ $allowed = [
 ];
 $orderBy = $allowed[$sort] ?? 'id DESC';
 
-// всего
-$totalRes = mysqli_query($conn, "SELECT COUNT(*) c FROM product");
-$total = (int)mysqli_fetch_assoc($totalRes)['c'];
-$pages = max(1, (int)ceil($total / $perPage));
-
-// выборка
-$stmt = mysqli_prepare($conn, "SELECT id, name, price, image FROM product ORDER BY $orderBy LIMIT ?,?");
-mysqli_stmt_bind_param($stmt, 'ii', $offset, $perPage);
-mysqli_stmt_execute($stmt);
-$res = mysqli_stmt_get_result($stmt);
-$items = [];
-while ($row = mysqli_fetch_assoc($res)) { $items[] = $row; }
-mysqli_stmt_close($stmt);
+// категории
+$categories = [
+    "tulle"    => "Тюль",
+    "curtains" => "Шторы",
+    "other"    => "Другое"
+];
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -64,36 +57,78 @@ mysqli_stmt_close($stmt);
                 </select>
             </form>
 
-            <div class="catalog">
-                <?php foreach ($items as $p): ?>
-                    <div class="item">
-                        <a href="product.php?id=<?= (int)$p['id'] ?>">
-                            <img src="images/<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
-                        </a>
-                        <a class="title" href="product.php?id=<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['name']) ?></a>
-                        <div class="price"><?= number_format($p['price'],0,',',' ') ?> ₽</div>
-                        <a class="cart-btn" href="cart.php?add=<?= (int)$p['id'] ?>">В корзину</a>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+            <?php foreach ($categories as $catKey => $catName): ?>
+                <?php
+                // номер страницы именно для этой категории
+                $pageParam = "page_" . $catKey;
+                $page = max(1, (int)($_GET[$pageParam] ?? 1));
+                $offset = ($page - 1) * $perPage;
 
-            <?php if ($pages > 1): ?>
-                <div class="pagination">
-                    <?php for ($i=1; $i<=$pages; $i++): ?>
-                        <?php if ($i==$page): ?>
-                            <strong><?= $i ?></strong>
-                        <?php else: ?>
-                            <a href="?page=<?= $i ?>&sort=<?= urlencode($sort) ?>"><?= $i ?></a>
-                        <?php endif; ?>
-                    <?php endfor; ?>
+                // считаем всего товаров в этой категории
+                $countRes = mysqli_prepare($conn, "SELECT COUNT(*) c FROM product WHERE category=?");
+                mysqli_stmt_bind_param($countRes, 's', $catKey);
+                mysqli_stmt_execute($countRes);
+                $countResult = mysqli_stmt_get_result($countRes);
+                $total = (int)mysqli_fetch_assoc($countResult)['c'];
+                mysqli_stmt_close($countRes);
+
+                $pages = max(1, (int)ceil($total / $perPage));
+                ?>
+                <h3 class="catalog-category"><?= $catName ?></h3>
+                <div class="catalog">
+                    <?php
+                    $stmt = mysqli_prepare($conn, "SELECT id, name, price, image FROM product WHERE category=? ORDER BY $orderBy LIMIT ?,?");
+                    mysqli_stmt_bind_param($stmt, 'sii', $catKey, $offset, $perPage);
+                    mysqli_stmt_execute($stmt);
+                    $res = mysqli_stmt_get_result($stmt);
+
+                    if (mysqli_num_rows($res) > 0):
+                        while ($p = mysqli_fetch_assoc($res)): ?>
+                            <div class="item">
+                                <a href="product.php?id=<?= (int)$p['id'] ?>">
+                                    <img src="images/<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
+                                </a>
+                                <a class="title" href="product.php?id=<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['name']) ?></a>
+                                <div class="price"><?= number_format($p['price'],0,',',' ') ?> ₽</div>
+                                <a class="cart-btn" href="cart.php?add=<?= (int)$p['id'] ?>">В корзину</a>
+                            </div>
+                        <?php endwhile;
+                    else: ?>
+                        <p style="color:#777;">В этой категории пока нет товаров.</p>
+                    <?php endif;
+                    mysqli_stmt_close($stmt);
+                    ?>
                 </div>
-            <?php endif; ?>
+
+                <?php if ($pages > 1): ?>
+                    <div class="pagination">
+                        <?php for ($i = 1; $i <= $pages; $i++): ?>
+                            <?php
+                            // сохраняем sort и все page_* кроме текущей
+                            $query = $_GET;
+                            $query[$pageParam] = $i;
+                            $url = '?' . http_build_query($query);
+                            ?>
+                            <?php if ($i == $page): ?>
+                                <strong><?= $i ?></strong>
+                            <?php else: ?>
+                                <a href="<?= $url ?>"><?= $i ?></a>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                    </div>
+                <?php endif; ?>
+
+            <?php endforeach; ?>
+
         </main>
 
         <aside class="image">
-            <a href="https://shop.ctepx.ru/" target="_blank">
-                <img src="images/banner.jpg" alt="Баннер">
+            <a href="https://www.cian.ru/" target="_blank">
+                <img src="images/banner.jpg" alt="Баннер" style="max-width:100%;">
             </a>
+            <a href="https://www.tbank.ru/" target="_blank">
+        <img src="images/banner_1.jpg" alt="Баннер 2" style="margin-top:15px;">
+    </a>
         </aside>
     </div>
 

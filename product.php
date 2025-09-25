@@ -90,9 +90,12 @@ while ($row = mysqli_fetch_assoc($q3)) { $properties[] = $row; }
         </main>
 
         <aside class="image">
-            <a href="https://shop.ctepx.ru/" target="_blank">
-                <img src="images/banner.jpg" alt="Баннер">
+            <a href="https://www.cian.ru/" target="_blank">
+                <img src="images/banner.jpg" alt="Баннер" style="max-width:100%;">
             </a>
+            <a href="https://www.tbank.ru/" target="_blank">
+        <img src="images/banner_1.jpg" alt="Баннер 2" style="margin-top:15px;">
+    </a>
         </aside>
     </div>
 
